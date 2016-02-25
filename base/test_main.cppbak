@@ -1,0 +1,43 @@
+#include "thread.h"
+#include "thread_pool.h"
+#include <iostream>
+#include <unistd.h>
+
+using namespace std;
+
+class test_thread : public Thread
+{
+public:
+    void run()
+	{
+       cout<<"Thread test:"<<*(int *)arg<<endl;
+	}
+};
+
+int print(void *arg)
+{
+	int n = *(int *)arg;
+
+	cout<<n<<endl;
+
+	return 0;
+}
+
+int main()
+{
+    Thread_pool thr_pool;
+	int n[100];
+	int i;
+
+	thr_pool.start();
+
+	for(i=0;i<100;i++)
+	{
+		n[i] = i;
+		thr_pool.add_task(print, n + i);
+	}
+
+	sleep(5);
+
+	return 0;
+}
