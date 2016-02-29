@@ -10,22 +10,21 @@ class Libevent_thread;
 
 class Conn : public Uncopyable
 {
-	friend class Event_server;
+    friend class Event_server;
 	
 public:
     Conn();
     virtual ~Conn();
     Libevent_thread *get_attached_worker();
-	int get_socket_fd(); 
-	struct bufferevent *get_bev();
-	void set_bev(struct bufferevent *bev);
-	void set_attached_worker(Libevent_thread *worker);
+    int get_socket_fd(); 
+    struct bufferevent *get_bev();
+    void set_bev(struct bufferevent *bev);
+    void set_attached_worker(Libevent_thread *worker);
 	
 private:
     int fd_; //socket fd for this connection
     Libevent_thread *attached_worker_;
-	struct bufferevent *bev_;
-	
+    struct bufferevent *bev_;
 };
 
 
