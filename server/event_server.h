@@ -15,10 +15,10 @@ class Dispatcher;
 class Event_server : public Uncopyable
 {
 public:	
-	Event_server(int port);
-	virtual ~Event_server();
+    Event_server(int port);
+    virtual ~Event_server();
 
-	void run();
+    void run();
 	
     static void accept_event_cb(evutil_socket_t fd, short event, void *arg);
     static void read_event_cb(struct bufferevent *bev, void *arg);
