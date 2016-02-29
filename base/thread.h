@@ -8,21 +8,21 @@ class Thread : public Uncopyable
 {
 
 public:
-	Thread();
-	void start(void *arg);
-	void exit();
+    Thread();
+    void start(void *arg);
+    void exit();
     void join();
-	virtual ~Thread();
-	virtual void run() = 0;
+    virtual ~Thread();
+    virtual void run() = 0;
 	
 protected:
-	void *arg;
+    void *arg;
 
 private:
-	static void *run_thread(void *);
+    static void *run_thread(void *);
 	
-	int started;
-	pthread_t tid;
+    int started;
+    pthread_t tid;
 };
 
 
