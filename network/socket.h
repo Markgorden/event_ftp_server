@@ -9,24 +9,24 @@ class Net_addr;
 class Socket
 {
 public:
-	Socket();
-	Socket(int skfd):sockfd(skfd)
-	{ }
+    Socket();
+    Socket(int skfd):sockfd(skfd)
+    { }
 
-	~Socket();
+    ~Socket();
 	
-	void listen() const;
-	int  accept(Net_addr &addr) const;
-	void bind_addr(Net_addr &addr) const;
-	void set_reuse_addr(bool enable) const;
-	void set_keep_alive(bool enable) const;
-	int get_sockfd();
-	int get_socket_port(unsigned short *port);
-	int get_socket_ip(uint32_t *ip);
-	int get_socket_ip(std::string &ip);
+    void listen() const;
+    int  accept(Net_addr &addr) const;
+    void bind_addr(Net_addr &addr) const;
+    void set_reuse_addr(bool enable) const;
+    void set_keep_alive(bool enable) const;
+    int get_sockfd();
+    int get_socket_port(unsigned short *port);
+    int get_socket_ip(uint32_t *ip);
+    int get_socket_ip(std::string &ip);
 	
 private:
-	int sockfd;
+    int sockfd;
 };
 
 #endif
