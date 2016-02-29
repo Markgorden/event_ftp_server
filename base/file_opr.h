@@ -11,8 +11,8 @@ namespace file
 
 enum open_mode
 {
-	RDONLY,
-	RDWR
+    RDONLY,
+    RDWR
 };
 
 typedef int (*dir_traverse_func)(const char *file_path, struct stat *statbuf, void *arg);
