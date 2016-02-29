@@ -25,25 +25,25 @@
 
 Ftp_server::Ftp_server(int port) : Event_server(port)
 {
-	get_user_list();
+    get_user_list();
 	
-	handler_map["USER"] = Ftp_server::cmd_user_handler;
-	handler_map["AUTH"] = Ftp_server::cmd_auth_handler;
-	handler_map["PASS"] = Ftp_server::cmd_pass_handler;
-	handler_map["SYST"] = Ftp_server::cmd_syst_handler;
-	handler_map["TYPE"] = Ftp_server::cmd_type_handler;
-	handler_map["PASV"] = Ftp_server::cmd_pasv_handler;
-	handler_map["LIST"] = Ftp_server::cmd_list_handler;
-	handler_map["CWD"]  = Ftp_server::cmd_cwd_handler;
-	handler_map["PWD"]  = Ftp_server::cmd_pwd_handler;
-	handler_map["CDUP"] = Ftp_server::cmd_cdup_handler;
-	handler_map["MKD"] = Ftp_server::cmd_mkd_handler;
-	handler_map["STOR"] = Ftp_server::cmd_stor_handler;
-	handler_map["RETR"] = Ftp_server::cmd_retr_handler;
-	handler_map["DELE"] = Ftp_server::cmd_dele_handler;
-	handler_map["RMD"]  = Ftp_server::cmd_rmd_handler;
-	handler_map["RNFR"] = Ftp_server::cmd_rnfr_handler;
-	handler_map["RNTO"] = Ftp_server::cmd_rnto_handler;
+    handler_map["USER"] = Ftp_server::cmd_user_handler;
+    handler_map["AUTH"] = Ftp_server::cmd_auth_handler;
+    handler_map["PASS"] = Ftp_server::cmd_pass_handler;
+    handler_map["SYST"] = Ftp_server::cmd_syst_handler;
+    handler_map["TYPE"] = Ftp_server::cmd_type_handler;
+    handler_map["PASV"] = Ftp_server::cmd_pasv_handler;
+    handler_map["LIST"] = Ftp_server::cmd_list_handler;
+    handler_map["CWD"]  = Ftp_server::cmd_cwd_handler;
+    handler_map["PWD"]  = Ftp_server::cmd_pwd_handler;
+    handler_map["CDUP"] = Ftp_server::cmd_cdup_handler;
+    handler_map["MKD"] = Ftp_server::cmd_mkd_handler;
+    handler_map["STOR"] = Ftp_server::cmd_stor_handler;
+    handler_map["RETR"] = Ftp_server::cmd_retr_handler;
+    handler_map["DELE"] = Ftp_server::cmd_dele_handler;
+    handler_map["RMD"]  = Ftp_server::cmd_rmd_handler;
+    handler_map["RNFR"] = Ftp_server::cmd_rnfr_handler;
+    handler_map["RNTO"] = Ftp_server::cmd_rnto_handler;
 }
 
 
@@ -60,10 +60,10 @@ Ftp_server::~Ftp_server()
 //output: cmd-->ftp cmd       arg-->ftp cmd argument
 static int parse_command(std::string cli_str, std::string &cmd, std::string &arg)
 {
-	std::size_t pos_space;
+    std::size_t pos_space;
     std::size_t pos_end;
 
-	std::cout << cli_str << std::endl;
+    std::cout << cli_str << std::endl;
 
     pos_space = cli_str.find(' ');
     if(pos_space == std::string::npos)
@@ -178,7 +178,7 @@ void Ftp_server::get_user_list()
     if(ret < 0)
     {
         fprintf(stderr, "read user file error");
-		exit(1);
+        exit(1);
     }
 }
 
@@ -187,7 +187,7 @@ void Ftp_server::get_user_list()
 
 bool Ftp_server::is_user_valid(const std::string &user)
 {
-	 for(auto it = user_list.cbegin(); it < user_list.cend(); it++)
+    for(auto it = user_list.cbegin(); it < user_list.cend(); it++)
     {
         if(user.compare(it->first) == 0) //match the user in user list
         {
@@ -216,20 +216,20 @@ std::string Ftp_server::get_user_password(const std::string &user)
  
 int Ftp_server::cmd_user_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 {
-	if(ser->is_user_valid(arg))
-	{
-		c->set_user_name(arg);
-		return c->command_reply("331 Please specify the password");
-	}
+    if(ser->is_user_valid(arg))
+    {
+        c->set_user_name(arg);
+        return c->command_reply("331 Please specify the password");
+    }
 
-	return c->command_reply("530 Login incorrect");
+    return c->command_reply("530 Login incorrect");
 }
 
 
 
 int Ftp_server::cmd_auth_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 {
-	return c->command_reply("530 Please login with USER and PASS.");
+    return c->command_reply("530 Please login with USER and PASS.");
 }
 
 
@@ -248,7 +248,7 @@ int Ftp_server::cmd_pass_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 
 int Ftp_server::cmd_syst_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 {
-	return c->command_reply("215 UNIX Type: L8");
+    return c->command_reply("215 UNIX Type: L8");
 }
 
 
@@ -278,40 +278,35 @@ int Ftp_server::cmd_pasv_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
     std::string ip;
     char send_buf[128];
 
-	//printf("socket-->%d, c-->%p\n",c->get_socket_fd(), c);
-
-	if(ser->local_ip_ == "")
-	{
+    if(ser->local_ip_ == "")
+    {
         char buf[32];
         
         socks::get_ip_addr(c->get_socket_fd(), buf, sizeof(buf));
         ser->local_ip_.assign(buf);
         std::cout << "local_ip:" << ser->local_ip_ << std::endl;
-	}
+    }
 
-	ip = ser->local_ip_;
+    ip = ser->local_ip_;
 
-	if(!c->pasv_listening_)//if not listening, go to listen
-	{
-		Net_addr addr(0); 
+    if(!c->pasv_listening_)//if not listening, go to listen
+    {
+        Net_addr addr(0); 
 
-		c->pasv_listener_.bind_addr(addr);
-		c->pasv_listener_.listen();
-		socks::set_nonblock(c->pasv_listener_.get_sockfd());
+        c->pasv_listener_.bind_addr(addr);
+        c->pasv_listener_.listen();
+        socks::set_nonblock(c->pasv_listener_.get_sockfd());
 
-		//c->pasv_listen_worker_ = c->get_attached_worker();
+        //add listen socket to event monitor
+        event_assign(&c->pasv_listen_event_, c->get_attached_worker()->get_event_base(),
+                    c->pasv_listener_.get_sockfd(), EV_READ | EV_PERSIST,
+                    Ftp_server::pasv_accept, static_cast<void *>(c));
+        event_add(&c->pasv_listen_event_, NULL);
+        c->pasv_listening_ = true;
+    }
 
-		//add listen socket to event monitor
-		event_assign(&c->pasv_listen_event_, c->get_attached_worker()->get_event_base(),
-			 c->pasv_listener_.get_sockfd(), EV_READ | EV_PERSIST,
-				Ftp_server::pasv_accept, static_cast<void *>(c));
-		event_add(&c->pasv_listen_event_, NULL);
-
-		c->pasv_listening_ = true;
-	}
-
-	//reply to client the ip:port we listen on
-	c->pasv_listener_.get_socket_port(&port);
+    //reply to client the ip:port we listen on
+    c->pasv_listener_.get_socket_port(&port);
 
     std::cout<< "get ip:" << ip << std::endl;
     std::cout<< "get port:" << port << std::endl;
@@ -326,7 +321,6 @@ int Ftp_server::cmd_pasv_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
     snprintf(send_buf, sizeof(send_buf), "227 Enter Passive mode (%s,%s)", ip.c_str(), str_port);
 
     return c->command_reply(send_buf);
-	
 }
 
 
@@ -432,18 +426,19 @@ static int get_dir_info(const char *name, struct stat *statbuf, void *arg)
 
 int Ftp_server::cmd_list_handler(Ftp_server *ser, Ftp_conn *c, std::string &path)
 {
-	Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
-	struct list_info info;
-	int ret;
-	size_t size;
+    Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
+    struct list_info info;
+    int ret;
+    size_t size;
 
-	if(req == NULL)
-	{
-		fprintf(stderr, "memory used out");
-		return ERR_NOMEM;
-	}
-	req->offset = 0;
-	req->for_which = Ftp_conn::CMD_LIST;
+    if(req == NULL)
+    {
+    	fprintf(stderr, "memory used out");
+    	return ERR_NOMEM;
+    }
+    req->offset = 0;
+    req->for_which = Ftp_conn::CMD_LIST;
+    
     if(path == "")
     {
         req->arg = c->cur_work_dir_;
@@ -453,33 +448,33 @@ int Ftp_server::cmd_list_handler(Ftp_server *ser, Ftp_conn *c, std::string &path
         req->arg = path;
     }
 
-	if(!file::is_dir_exist(req->arg.c_str()))
+    if(!file::is_dir_exist(req->arg.c_str()))
     {
         c->command_reply("550 Directory not found");
         return SUCCESS;
     }
 
-	//traverse items under the directory and get information
-	if((ret = file::for_each_in_dir(req->arg.c_str(), get_dir_info,
-			static_cast<void *>(&info))) != SUCCESS)
-	{
-		 c->command_reply("451 Local error in processing");
-		 return ret;
-	}
+    //traverse items under the directory and get information
+    if((ret = file::for_each_in_dir(req->arg.c_str(), get_dir_info,
+	   static_cast<void *>(&info))) != SUCCESS)
+    {
+    	c->command_reply("451 Local error in processing");
+    	return ret;
+    }
 
 
-	//allocate buffer to story the list information
-	size = info.dir_list.length() + info.file_list.length() + 1;
-	req->buf = new char[size];
-	if(req->buf == NULL)
-	{
-		fprintf(stderr, "memory used out:cannot allocate %u bytes for list directory", size);
-		c->command_reply("451 Local error in processing");
-		return ERR_NOMEM;
-	}
-	req->size = size;
+    //allocate buffer to story the list information
+    size = info.dir_list.length() + info.file_list.length() + 1;
+    req->buf = new char[size];
+    if(req->buf == NULL)
+    {
+    	fprintf(stderr, "memory used out:cannot allocate %u bytes for list directory", size);
+    	c->command_reply("451 Local error in processing");
+    	return ERR_NOMEM;
+    }
+    req->size = size;
 
-	sprintf(req->buf, "%s%s", info.dir_list.c_str(), info.file_list.c_str());
+    sprintf(req->buf, "%s%s", info.dir_list.c_str(), info.file_list.c_str());
 	
     c->add_data_conn_req(req);
 	//printf("socket-->%d, c-->%p, queue-->%p\n",c->get_socket_fd(), c, &c->req_queue_);
@@ -492,34 +487,34 @@ int Ftp_server::cmd_list_handler(Ftp_server *ser, Ftp_conn *c, std::string &path
 
 int Ftp_server::cmd_stor_handler(Ftp_server *ser, Ftp_conn *c, std::string &path)
 {
-	int fd;
-	Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
-	std::string fpath = c->real_path(path);
+    int fd;
+    Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
+    std::string fpath = c->real_path(path);
 
-	if(req == NULL)
-	{
-		fprintf(stderr, "memory used out");
-		return ERR_NOMEM;
-	}
+    if(req == NULL)
+    {
+    	fprintf(stderr, "memory used out");
+    	return ERR_NOMEM;
+    }
 	
-	if((fd = file::create_file(fpath.c_str())) <= 0)
+    if((fd = file::create_file(fpath.c_str())) <= 0)
     {	
     	perror("create file error:");
         c->command_reply("550 cannot create file");
         return SUCCESS;
     }
 	
-	req->for_which = Ftp_conn::CMD_STOR;
-	req->fd = fd;
-	req->size = req->offset = 0;
-	req->buf = new char[Ftp_conn::RECV_BUFFER_SIZE];
-	if(req->buf == NULL)
-	{
-		c->command_reply("451 Inernal error");
-		return ERR_NOMEM;
-	}
-	
-	c->add_data_conn_req(req);
+    req->for_which = Ftp_conn::CMD_STOR;
+    req->fd = fd;
+    req->size = req->offset = 0;
+    req->buf = new char[Ftp_conn::RECV_BUFFER_SIZE];
+    if(req->buf == NULL)
+    {
+    	c->command_reply("451 Inernal error");
+    	return ERR_NOMEM;
+    }
+
+    c->add_data_conn_req(req);
 	
     return SUCCESS;
 }
@@ -529,33 +524,33 @@ int Ftp_server::cmd_stor_handler(Ftp_server *ser, Ftp_conn *c, std::string &path
 
 int Ftp_server::cmd_retr_handler(Ftp_server * ser, Ftp_conn *c, std::string &path)
 {
-	int fd;
-	Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
-	std::string fpath = c->real_path(path);
+    int fd;
+    Ftp_conn::data_conn_req_t *req = new Ftp_conn::data_conn_req_t;
+    std::string fpath = c->real_path(path);
 
-	if(req == NULL)
-	{
-		fprintf(stderr, "memory used out");
-		return ERR_NOMEM;
-	}
+    if(req == NULL)
+    {
+        fprintf(stderr, "memory used out");
+        return ERR_NOMEM;
+    }
 
-	if((fd = file::open(fpath.c_str(), file::RDONLY)) < 0)
+    if((fd = file::open(fpath.c_str(), file::RDONLY)) < 0)
     {
         c->command_reply("550 Cannot access file");
         return SUCCESS;
     }
 
-	req->for_which = Ftp_conn::CMD_RETR;
-	req->fd = fd;
-	req->size = req->offset = 0;
-	req->buf = new char[Ftp_conn::SEND_BUFFER_SIZE];
-	if(req->buf == NULL)
-	{
-		c->command_reply("451 Inernal error");
-		return ERR_NOMEM;
-	}
+    req->for_which = Ftp_conn::CMD_RETR;
+    req->fd = fd;
+    req->size = req->offset = 0;
+    req->buf = new char[Ftp_conn::SEND_BUFFER_SIZE];
+    if(req->buf == NULL)
+    {
+        c->command_reply("451 Inernal error");
+        return ERR_NOMEM;
+    }
 	
-	c->add_data_conn_req(req);
+    c->add_data_conn_req(req);
 	
     return SUCCESS;
 }
@@ -564,7 +559,7 @@ int Ftp_server::cmd_retr_handler(Ftp_server * ser, Ftp_conn *c, std::string &pat
 
 int Ftp_server::cmd_pwd_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 {
-	return c->command_reply("257 " + c->cur_work_dir_);
+    return c->command_reply("257 " + c->cur_work_dir_);
 }
 
 
@@ -590,14 +585,14 @@ int Ftp_server::cmd_cwd_handler(Ftp_server *ser, Ftp_conn *c, std::string &path)
     c->cur_work_dir_ = dir_path;
     std::cout << "change workdir to " << c ->cur_work_dir_ << std::endl;
 
-	return c->command_reply("250 CWD command successful");
+    return c->command_reply("250 CWD command successful");
 }
 
 
 
 int Ftp_server::cmd_cdup_handler(Ftp_server *ser, Ftp_conn *c, std::string &arg)
 {
-	std::string path;
+    std::string path;
     std::size_t pos;
 
     if(c->cur_work_dir_ != "/")//not root dir 
@@ -645,7 +640,7 @@ int Ftp_server::cmd_mkd_handler(Ftp_server *ser, Ftp_conn *c, std::string &dir_n
 
 int Ftp_server::cmd_dele_handler(Ftp_server *ser, Ftp_conn *c, std::string &file_name)
 {
-	std::string fpath = c->real_path(file_name);
+    std::string fpath = c->real_path(file_name);
     int ret;
     if(!file::is_file_exist(fpath.c_str()))
     {
@@ -668,15 +663,18 @@ int Ftp_server::cmd_rmd_handler(Ftp_server *ser, Ftp_conn *c, std::string &file_
 {
     std::string fpath = c->real_path(file_name);
     int ret;
+    
     if(!file::is_dir_exist(fpath.c_str()))
     {
         return c->command_reply("550 Directory not exist");
     }
+    
     if((ret = file::rm(fpath.c_str())) != SUCCESS)
     {
         c->command_reply("550 Delete directory failed");
         return ret;
     }
+    
     return c->command_reply("250 Delete directory OK");
 }
 
@@ -699,7 +697,7 @@ int Ftp_server::cmd_rnfr_handler(Ftp_server * ser, Ftp_conn *c, std::string &pat
 
 int Ftp_server::cmd_rnto_handler(Ftp_server *ser, Ftp_conn *c, std::string &path)
 {
-	std::string fpath = c->real_path(path);
+    std::string fpath = c->real_path(path);
     std::string cmd;
 	
     if(file::is_dir_exist(fpath.c_str()) || file::is_file_exist(fpath.c_str()))
@@ -708,6 +706,7 @@ int Ftp_server::cmd_rnto_handler(Ftp_server *ser, Ftp_conn *c, std::string &path
     }
     cmd = "mv " + c->rename_path_ + " " + fpath;
     system(cmd.c_str());
+    
     return c->command_reply("250 Rename file successful");
 }
 
@@ -716,45 +715,43 @@ int Ftp_server::cmd_rnto_handler(Ftp_server *ser, Ftp_conn *c, std::string &path
 
 static void data_list_cb(evutil_socket_t fd, short event, void *arg)
 {
-	Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
-	Ftp_conn *c = req->c;
+    Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
+    Ftp_conn *c = req->c;
 
-	c->command_reply("150 Here comes the directory list");
+    c->command_reply("150 Here comes the directory list");
 
-	while(1)
-	{
-		size_t bytes_to_send = req->size - req->offset;
-		ssize_t n;
+    while(1)
+    {
+        size_t bytes_to_send = req->size - req->offset;
+        ssize_t n;
 		
-		if(bytes_to_send == 0)
-		{	
-			break;
-		}
+        if(bytes_to_send == 0)
+        {	
+             break;
+        }
 
-		n = file::writen(fd, req->buf + req->offset, bytes_to_send);
-		if(n <= 0) //write error
-		{
-			if(errno == EAGAIN || errno == EWOULDBLOCK)
-			{//write buffer full, wait for the next writable time
-				return;
-			}
-			perror("write error:");
-			break;
-		}
-		else if(n > 0)
-		{
-			file::writen(STDOUT_FILENO, req->buf + req->offset, bytes_to_send);
+        n = file::writen(fd, req->buf + req->offset, bytes_to_send);
+        if(n <= 0) //write error
+        {
+            if(errno == EAGAIN || errno == EWOULDBLOCK)
+            {//write buffer full, wait for the next writable time
+                return;
+            }
+	    perror("write error:");
+            break;
+        }
+        else if(n > 0)
+        {
+            file::writen(STDOUT_FILENO, req->buf + req->offset, bytes_to_send);
 			req->offset += n;
-		}
-	}
+        	
+        }
+    }
 
-	c->command_reply("226 Directory send OK");
+    c->command_reply("226 Directory send OK");
 	
-//	delete []req->buf;
-//	event_del(req->ev);
-//	event_free(req->ev);
-	delete req;
-	socks::close(fd);
+    delete req;
+    socks::close(fd);
 }
 
 
@@ -768,8 +765,8 @@ static int get_download_data_ready(Ftp_conn::data_conn_req_t *req)
         return 1;
     }
 
-	req->size = 0;
-	req->offset = 0;
+    req->size = 0;
+    req->offset = 0;
 
     n = file::readn(req->fd, req->buf, Ftp_conn::SEND_BUFFER_SIZE);
     if(n < 0) //read error
@@ -792,16 +789,16 @@ static int get_download_data_ready(Ftp_conn::data_conn_req_t *req)
 
 static void download_file_cb(evutil_socket_t fd, short event, void *arg)
 {
-	Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
-	Ftp_conn *c = req->c;
-	int ret;
+    Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
+    Ftp_conn *c = req->c;
+    int ret;
 
-	c->command_reply("150 OK to send file data");        
+    c->command_reply("150 OK to send file data");        
 
-	while(1)
-	{
-		ret = get_download_data_ready(req);
-		if(ret == -1)//read local file error
+    while(1)
+    {
+    	ret = get_download_data_ready(req);
+    	if(ret == -1)//read local file error
         {
             std::cout << "get file data error" << std::endl;
             c->command_reply("426 Transfer aborted");
@@ -813,37 +810,37 @@ static void download_file_cb(evutil_socket_t fd, short event, void *arg)
             c->command_reply("226 Transfer complete");
             goto STOP_TRANSFER;
         }
-		else//
-		{
-			ssize_t n;
+        else
+        {
+            ssize_t n;
             size_t bytes_to_send = req->size - req->offset;
-			if(bytes_to_send == 0)
-			{
-				req->size = 0;
-				req->offset = 0;
-				continue; // goto read next block of file
-			}
-			n = file::writen(fd, req->buf + req->offset, bytes_to_send);
-			if(n <= 0) //write error
-			{
-				if(errno == EAGAIN || errno == EWOULDBLOCK)
-				{//write buffer full, wait for the next writable time
-					return;
-				}
-				c->command_reply("426 Transfer aborted");
-           	    goto STOP_TRANSFER;
-			}
-			else if(n > 0)
-			{
-				file::writen(STDOUT_FILENO, req->buf + req->offset, bytes_to_send);
-				req->offset += n;
-			}
-		}
+            if(bytes_to_send == 0)
+            {
+                req->size = 0;
+                req->offset = 0;
+                continue; // goto read next block of file
 	}
 	
+	n = file::writen(fd, req->buf + req->offset, bytes_to_send);
+	if(n <= 0) //write error
+        {
+            if(errno == EAGAIN || errno == EWOULDBLOCK)
+            {//write buffer full, wait for the next writable time
+                return;
+            }
+	    c->command_reply("426 Transfer aborted");
+            goto STOP_TRANSFER;
+        }
+        else if(n > 0)
+        {
+            file::writen(STDOUT_FILENO, req->buf + req->offset, bytes_to_send);
+            req->offset += n;
+	}
+    }
+	
 STOP_TRANSFER:
-	delete req;
-	socks::close(fd);
+    delete req;
+    socks::close(fd);
 }
 
 
@@ -851,30 +848,30 @@ STOP_TRANSFER:
 
 static void upload_file_cb(evutil_socket_t fd, short event, void *arg)
 {
-	Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
-	Ftp_conn *c = req->c;
+    Ftp_conn::data_conn_req_t *req = static_cast<Ftp_conn::data_conn_req_t *>(arg);
+    Ftp_conn *c = req->c;
 
 	//c->command_reply("150 OK to receive file data");
 	
-	while(1)
-	{
-		ssize_t n;
-		n = file::readn(fd, req->buf, Ftp_conn::RECV_BUFFER_SIZE);
-		if(n < 0)
-		{
-			if(errno == EAGAIN || errno == EWOULDBLOCK)
-			{
-				return;
-			}
-			goto STOP_TRANSFER;
-		}
-	    else if(n == 0)
+    while(1)
+    {
+        ssize_t n;
+        n = file::readn(fd, req->buf, Ftp_conn::RECV_BUFFER_SIZE);
+        if(n < 0)
+        {
+            if(errno == EAGAIN || errno == EWOULDBLOCK)
+            {
+                return;
+            }
+            goto STOP_TRANSFER;
+        }
+        else if(n == 0)
         {
             std::cout << "peer closed data connection" << std::endl;
             c->command_reply("226 Transfer complete");
             goto STOP_TRANSFER;
         }
-	    else
+	else
         {
             ssize_t write_bytes;
             write_bytes = file::writen(req->fd, req->buf, n);
@@ -884,10 +881,11 @@ static void upload_file_cb(evutil_socket_t fd, short event, void *arg)
                 goto STOP_TRANSFER;
             }
         }
-	}
+    }
+    
 STOP_TRANSFER:
-	delete req;
-	socks::close(fd);
+    delete req;
+    socks::close(fd);
 }
 
 
