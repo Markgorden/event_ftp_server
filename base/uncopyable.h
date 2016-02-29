@@ -5,19 +5,19 @@
 class Uncopyable
 {
 public:
-	Uncopyable()
-	{
+    Uncopyable()
+    {
 	
-	}
+    }
 
-	~Uncopyable()
-	{
+    ~Uncopyable()
+    {
 	
-	}
+    }
 
 private:
-	Uncopyable(const Uncopyable &);
-	Uncopyable operator=(const Uncopyable &);
+    Uncopyable(const Uncopyable &);
+    Uncopyable operator=(const Uncopyable &);
 };
 
 #endif
