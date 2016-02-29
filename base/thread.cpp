@@ -20,7 +20,7 @@ void Thread::start(void *arg)
     if(started == 1)
     {
         cout<<"Thread already started"<<endl;
- 		return;
+        return;
     }
 
     this->arg = arg;
@@ -34,7 +34,7 @@ void Thread::start(void *arg)
 
 void Thread::exit()
 {
-	pthread_exit(NULL);
+    pthread_exit(NULL);
 }
 
 
@@ -46,9 +46,9 @@ void Thread::join()
 
 void *Thread::run_thread(void *arg)
 {
-     ((Thread *)arg)->run();
+    ((Thread *)arg)->run();
 
-	 return NULL;
+    return NULL;
 }
 
 
