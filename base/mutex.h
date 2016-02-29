@@ -12,23 +12,23 @@ class Condition;
 class Mutex : private Uncopyable
 {
 public:
-	Mutex();
-	~Mutex();
-	void lock();
-	void unlock();
+    Mutex();
+    ~Mutex();
+    void lock();
+    void unlock();
 
 private:
-	friend class Condition;
-	pthread_mutex_t mu_;
+    friend class Condition;
+    pthread_mutex_t mu_;
 };
 
 inline void pthread_call(const char *label, int result)
 {
-	if(result != 0)
-	{
-		fprintf(stderr, "thread %s: %s", label, strerror(result));
-		abort();
-	}
+    if(result != 0)
+    {
+        fprintf(stderr, "thread %s: %s", label, strerror(result));
+        abort();
+    }
 }
 
 #endif
