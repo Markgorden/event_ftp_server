@@ -743,8 +743,7 @@ static void data_list_cb(evutil_socket_t fd, short event, void *arg)
         else if(n > 0)
         {
             file::writen(STDOUT_FILENO, req->buf + req->offset, bytes_to_send);
-			req->offset += n;
-        	
+            req->offset += n;
         }
     }
 
@@ -893,71 +892,70 @@ STOP_TRANSFER:
 
 void Ftp_server::pasv_accept(evutil_socket_t listener, short event, void *arg)
 {
-	Ftp_conn *c = static_cast<Ftp_conn *>(arg);
-	int conn_fd;
-	Net_addr addr;
-	Ftp_conn::data_conn_req_t *req; 
+    Ftp_conn *c = static_cast<Ftp_conn *>(arg);
+    int conn_fd;
+    Net_addr addr;
+    Ftp_conn::data_conn_req_t *req; 
 
-	//accept data connection
-	conn_fd = c->pasv_listener_.accept(addr);	
-	socks::set_nonblock(conn_fd);
-	std::cout<< "data connection from" << addr.get_ip_port() << std::endl;
+    //accept data connection
+    conn_fd = c->pasv_listener_.accept(addr);	
+    socks::set_nonblock(conn_fd);
+    std::cout<< "data connection from" << addr.get_ip_port() << std::endl;
 
-	printf("c-->%p, queue-->%p\n", c, &c->req_queue_);
-	std::cout << "queue size: " << c->req_queue_.size() << std::endl;
+    printf("c-->%p, queue-->%p\n", c, &c->req_queue_);
+    
+    //get data request
+    req = c->req_queue_.front();
+    c->req_queue_.pop();
 
-	//get data request
-	req = c->req_queue_.front();
-	c->req_queue_.pop();
-
-	if(req == NULL)
-	{
-		fprintf(stderr, "no valid request in queue");
-		socks::close(conn_fd);
-		return;
-	}
+    if(req == NULL)
+    {
+        fprintf(stderr, "no valid request in queue");
+        socks::close(conn_fd);
+        return;
+    }
 	
-	if(req->for_which == Ftp_conn::CMD_LIST)//for listing directory
-	{
-		req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
-							 EV_WRITE | EV_PERSIST,
-							 data_list_cb, 
-							 static_cast<void *>(req));
-		if(req->ev == NULL)
-		{
-			fprintf(stderr, "event_new failed");
-			return;
-		}
+    if(req->for_which == Ftp_conn::CMD_LIST)//for listing directory
+    {
+        req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
+                            EV_WRITE | EV_PERSIST,
+                            data_list_cb, 
+                            static_cast<void *>(req));
+        if(req->ev == NULL)
+        {
+            fprintf(stderr, "event_new failed");
+            return;
+        }
 		event_add(req->ev, NULL);
-	}	
-	else if(req->for_which == Ftp_conn::CMD_RETR)//for  downloading file
-	{
-		req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
-							 EV_WRITE | EV_PERSIST,
-							 download_file_cb, 
-							 static_cast<void *>(req));
-		if(req->ev == NULL)
-		{
-			fprintf(stderr, "event_new failed");
-			return;
-		}
-		event_add(req->ev, NULL);
-	}
-	else //for uploading file
-	{
-		req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
-					 EV_READ | EV_PERSIST,
-					 upload_file_cb, 
-					 static_cast<void *>(req));
-		if(req->ev == NULL)
-		{
-			fprintf(stderr, "event_new failed");
-			return;
-		}
-		event_add(req->ev, NULL);
+    }	
+    else if(req->for_which == Ftp_conn::CMD_RETR)//for  downloading file
+    {
+        req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
+			    EV_WRITE | EV_PERSIST,
+			    download_file_cb, 
+                            static_cast<void *>(req));
+        if(req->ev == NULL)
+        {
+            fprintf(stderr, "event_new failed");
+            return;
+        }
+	    event_add(req->ev, NULL);
+    }
+    else //for uploading file
+    {
+        req->ev = event_new(c->get_attached_worker()->get_event_base(), conn_fd,
+	EV_READ | EV_PERSIST,
+	upload_file_cb, 
+	static_cast<void *>(req));
+	if(req->ev == NULL)
+        {
+            fprintf(stderr, "event_new failed");
+            return;
+        }
+        event_add(req->ev, NULL);
 
-		c->command_reply("150 OK to receive file data");
-	}
+	c->command_reply("150 OK to receive file data");
+    }
 }
 
 
@@ -973,17 +971,17 @@ int Ftp_server::cmd_unknown(Ftp_conn *c)
 
 Conn *Ftp_server::handle_accept_event(int fd)
 {
-	Conn *c = new Ftp_conn;
-	const char *str = "220 (welcome to vanbreaker's ftp)\r\n";
+    Conn *c = new Ftp_conn;
+    const char *str = "220 (welcome to vanbreaker's ftp)\r\n";
 
-	std::cout << str << std::endl;
+    std::cout << str << std::endl;
 
-	if(file::writen(fd, str, strlen(str)) < 0)
-	{
-		fprintf(stderr, "write welcome message error");
-	}
+    if(file::writen(fd, str, strlen(str)) < 0)
+    {
+        fprintf(stderr, "write welcome message error");
+    }
 
-	return c;
+    return c;
 }
 
 
@@ -991,39 +989,39 @@ Conn *Ftp_server::handle_accept_event(int fd)
 
 void Ftp_server::handle_read_event(Conn *connection)
 {
-	char buf[64];
-	std::string cmd,cmd_arg;
-	size_t n;
-	Event_server *event_server = connection->get_attached_worker()->get_event_server();
-	Ftp_server *ser = static_cast<Ftp_server *>(event_server);
-	Ftp_conn *c = static_cast<Ftp_conn *>(connection);
+    char buf[64];
+    std::string cmd,cmd_arg;
+    size_t n;
+    
+    Event_server *event_server = connection->get_attached_worker()->get_event_server();
+    Ftp_server *ser = static_cast<Ftp_server *>(event_server);
+    Ftp_conn *c = static_cast<Ftp_conn *>(connection);
 	
-	n = bufferevent_read(c->get_bev(), buf, sizeof(buf));
-	if(n <= 0)
-	{
-		fprintf(stderr, "error on bufferevent_read");
-		return ;
-	}
-	buf[n] = 0;
+    n = bufferevent_read(c->get_bev(), buf, sizeof(buf));
+    if(n <= 0)
+    {
+        fprintf(stderr, "error on bufferevent_read");
+        return ;
+    }
+    buf[n] = 0;
 
-	if(parse_command(buf, cmd, cmd_arg) != 0)
-	{
-		cmd_unknown(c);
-		return;
-	}
+    if(parse_command(buf, cmd, cmd_arg) != 0)
+    {
+        cmd_unknown(c);
+        return;
+    }
 
-	auto t = ser->handler_map.find(cmd);
-	if(t == ser->handler_map.end())
-	{
-		std::cout << "unrecognized command:" << cmd << std::endl;
-		cmd_unknown(c);
-	}
-	else
-	{
-		cmd_handler handler = t->second;
-		
-		handler(ser, c, cmd_arg);
-	}
+    auto t = ser->handler_map.find(cmd);
+    if(t == ser->handler_map.end())
+    {
+        std::cout << "unrecognized command:" << cmd << std::endl;
+        cmd_unknown(c);
+    }
+    else
+    {
+        cmd_handler handler = t->second;
+        handler(ser, c, cmd_arg);
+    }
 
 }
 
@@ -1040,19 +1038,19 @@ void Ftp_server::handle_write_event(Conn *connection)
 
 void Ftp_server::handle_error_event(Conn * connection)
 {
-	std::cout << "peer closed connection" << std::endl;
-	Ftp_conn *c = static_cast<Ftp_conn *>(connection);
-
-	delete c;
+    std::cout << "peer closed connection" << std::endl;
+    Ftp_conn *c = static_cast<Ftp_conn *>(connection);
+    
+    delete c;
 }
 
 #if 1
 int main()
 {
-	Ftp_server ftp_server(8888);
+    Ftp_server ftp_server(8888);
+    
+    ftp_server.run();
 
-	ftp_server.run();
-
-	return 0;
+    return 0;
 }
 #endif
