@@ -13,14 +13,13 @@ class Event_server;
 class Dispatcher : public Uncopyable
 {
 public:
-	Dispatcher(Event_server *ser);
+    Dispatcher(Event_server *ser);
     ~Dispatcher();
-	void dispatch(Conn *connection);
+    void dispatch(Conn *connection);
 	
 private:
-	Libevent_thread worker_threads_[WORKER_THREAD_NUM];
-	int last_recv_thread_;
-	
+    Libevent_thread worker_threads_[WORKER_THREAD_NUM];
+    int last_recv_thread_;
 };
 
 #endif
