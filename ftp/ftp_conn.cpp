@@ -15,19 +15,19 @@ Ftp_conn::Ftp_conn()
 
 Ftp_conn::~Ftp_conn()
 {
-	if(pasv_listening_)
-	{
-		event_del(&pasv_listen_event_);
-		socks::close(pasv_listener_.get_sockfd());
-	}
+    if(pasv_listening_)
+    {
+        event_del(&pasv_listen_event_);
+        socks::close(pasv_listener_.get_sockfd());
+    }
 
-	while(!req_queue_.empty())
-	{
-		Ftp_conn::data_conn_req_t *req = req_queue_.front();
+    while(!req_queue_.empty())
+    {
+        Ftp_conn::data_conn_req_t *req = req_queue_.front();
 
-		req_queue_.pop();
-		delete req;
-	}
+        req_queue_.pop();
+        delete req;
+    }
 }
 
 int Ftp_conn::command_reply(std::string s)
@@ -49,14 +49,14 @@ int Ftp_conn::command_reply(std::string s)
 
 void Ftp_conn::set_user_name(std::string &s)
 {
-	user_name_ = s;
+    user_name_ = s;
 }
 
 
 
 const std::string &Ftp_conn::get_user_name()
 {
-	return user_name_;
+    return user_name_;
 }
 
 
@@ -64,8 +64,8 @@ const std::string &Ftp_conn::get_user_name()
 
 void Ftp_conn::add_data_conn_req(data_conn_req_t *req)
 {
-	req->c = this;
-	req_queue_.push(req);
+    req->c = this;
+    req_queue_.push(req);
 }
 
 
