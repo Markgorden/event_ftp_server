@@ -10,116 +10,6 @@
 #include <stdlib.h>
 
 
-/*
-int _dir_traverse(FILE *fp_read, FILE *fp_write, dir_traverse_func func, void *arg)
-{
-	char dir_path[512] = {0};
-	int flushed = 0;
-	int dir_quantity = 0;
-	int ret;
-
-retry:
-	while(fgets(dir_path, sizeof(dir_path), fp_read) != NULL)
-	{
-		struct dirent *dirp;
-		DIR  *dp;
-
-		flushed = 0;
-
-		dir_path[strlen(dir_path) - 1] = 0; //eliminate the '\n'
-		if((dp = opendir(dir_path)) == NULL)
-		{
-			log_warning("cannot find dir %s", dir_path);
-			return EOPEN;
-		}
-
-		while((dirp = readdir(dp)) != NULL)
-		{
-			const char *name = dirp->d_name;
-			char path[512];
-			struct stat statbuf;
-
-			if(strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
-			{
-				continue;
-			}
-
-			snprintf(path, sizeof(path), "%s/%s", dir_path, name);
-
-			if(lstat(path, &statbuf) < 0)
-			{
-				log_warning("lstat for %s error", path);
-				closedir(dp);
-				return ESTATFS;
-			}
-
-			if(S_ISDIR(statbuf.st_mode))
-			{
-				save_dir_path(path, fp_write);
-				dir_quantity++;
-				if(dir_quantity >= QUANTITY_PER_FLUSH)
-				{
-					dir_quantity = 0;
-					fflush(fp_write);
-				}
-			}
-			else
-			{
-				log_debug("find file(%s),handle it", path);
-				if((ret = func(path, &statbuf, arg)) != 0)
-				{
-					log_warning("traverse cb error,0x%x", ret);
-					return ret;
-				}
-			}
-		}
-
-		closedir(dp);	
-	}
-
-	if(flushed == 0)
-	{
-		fflush(fp_write);
-		dir_quantity = 0;
-		flushed = 1;
-		goto retry;
-	}
-
-	DBG("exit");
-
-	return RET_SUCCESS;
-}
-
-
-int dir_traverse(const char *dir_path, dir_traverse_func func, void *arg, bool handle_dir)
-{
-	FILE *fp_write, *fp_read;
-	int ret;
-	
-	fp_write = fopen(DIR_TRAVERSE_TMP_FILE, "w+");
-	fp_read  = fopen(DIR_TRAVERSE_TMP_FILE, "r");
-	if(fp_write == NULL || fp_read == NULL)
-	{
-		return -1;
-	}
-
-	save_dir_path(dir_path, fp_write);
-	fflush(fp_write);
-
-	if((ret = _dir_traverse(fp_read, fp_write, func, arg)) != RET_SUCCESS)
-	{
-		log_warning("traverse error(0x%x)",ret);
-		fclose(fp_read);
-		fclose(fp_write);
-		return ret;
-	}
-
-	fclose(fp_read);
-	fclose(fp_write);
-	return 0;
-}	
-
-*/
 
 static char* last_char_is(const char *s, int c)
 {
@@ -154,43 +44,43 @@ static char* concat_path_file(const char *path, const char *filename)
 
 int file::for_each_in_dir(const char *dir_path, for_each_dir_cb dir_cb, void *arg)
 {
-	DIR *p_dir;
-	struct dirent *entry;
-	int ret = 0;
+    DIR *p_dir;
+    struct dirent *entry;
+    int ret = 0;
 
-	if(dir_path == NULL || dir_cb == NULL)
-	{
-		return ERR_INVALID_PARAM;
-	}
+    if(dir_path == NULL || dir_cb == NULL)
+    {
+        return ERR_INVALID_PARAM;
+    }
 
-	p_dir = opendir(dir_path);
-	if(p_dir == NULL)
-	{
-		return ERR_INVALID_PARAM;
-	}
+    p_dir = opendir(dir_path);
+    if(p_dir == NULL)
+    {
+        return ERR_INVALID_PARAM;
+    }
 
-	while((entry = readdir(p_dir)) != NULL)
-	{
-		const char *name = entry->d_name;
-	    char path[512];
-		struct stat statbuf;
+    while((entry = readdir(p_dir)) != NULL)
+    {
+        const char *name = entry->d_name;
+        char path[512];
+        struct stat statbuf;
 
-		snprintf(path, sizeof(path), "%s/%s", dir_path, name);
+        snprintf(path, sizeof(path), "%s/%s", dir_path, name);
 
-		if(lstat(path, &statbuf) < 0)
-		{
-			return ERR_FS_STAT;
-		}
+        if(lstat(path, &statbuf) < 0)
+        {
+            return ERR_FS_STAT;
+        }
 		
-		ret = (*dir_cb)(name, &statbuf, arg);	
-		if(ret < 0)
-		{
-			break;
-		}
-	}
+        ret = (*dir_cb)(name, &statbuf, arg);	
+        if(ret < 0)
+        {
+            break;
+        }
+    }
 
-	closedir(p_dir);
-	return ret;
+    closedir(p_dir);
+    return ret;
 }
 
 
@@ -237,20 +127,20 @@ bool file::is_dir_exist(const char *dir_path)
 
 int file::make_dir(const char *dir_path)
 {
-	int ret = is_dir_exist(dir_path);
+    int ret = is_dir_exist(dir_path);
 	
-	if(ret > 0)
-	{
-		return 0;
-	}
-	else if(ret == 0)
-	{
-		return mkdir(dir_path, 0751);
-	}
-	else
-	{
-		return -1;	
-	}
+    if(ret > 0)
+    {
+        return 0;
+    }
+    else if(ret == 0)
+    {
+        return mkdir(dir_path, 0751);
+    }
+    else
+    {
+        return -1;	
+    }
 }
 
 
@@ -303,26 +193,27 @@ ssize_t file::readn(int fd, char *buf, size_t count)
 
 ssize_t file::writen(int fd, const char *buf, size_t count)
 {
-	ssize_t ret = -1;
-	ssize_t write_bytes = 0;
+    ssize_t ret = -1;
+    ssize_t write_bytes = 0;
 
-	if(fd < 0)
-		return -1;
+    if(fd < 0)
+        return -1;
 	
-	while(write_bytes < count)
-	{
-		ret = write(fd, buf+write_bytes, count-write_bytes); 
-		if(ret < 0)
-		{
-			if(errno == EINTR)
-				continue;
-			return write_bytes; 	
-		}
+    while(write_bytes < count)
+    {
+        ret = write(fd, buf+write_bytes, count-write_bytes); 
+        if(ret < 0)
+        {
+            if(errno == EINTR)
+                continue;
+                
+            return write_bytes; 	
+        }
 
-		write_bytes += ret;
-	}
+        write_bytes += ret;
+    }
 
-	return write_bytes;
+    return write_bytes;
 }
 
 
