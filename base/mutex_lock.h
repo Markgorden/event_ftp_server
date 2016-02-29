@@ -7,18 +7,18 @@
 class Mutex_lock
 {
 public:
-	Mutex_lock(Mutex *pm) : mutex_ptr_(pm)
-	{
-		mutex_ptr_->lock();
-	}
+    Mutex_lock(Mutex *pm) : mutex_ptr_(pm)
+    {
+        mutex_ptr_->lock();
+    }
 
-	~Mutex_lock()
-	{
-		mutex_ptr_->unlock();
-	}
+    ~Mutex_lock()
+    {
+        mutex_ptr_->unlock();
+    }
 
 private:
-	Mutex *mutex_ptr_;
+    Mutex *mutex_ptr_;
 };
 
 #endif
